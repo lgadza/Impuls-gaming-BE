@@ -2,8 +2,7 @@ import express from "express";
 import listEndpoints from "express-list-endpoints";
 import cors from "cors";
 import mongoose from "mongoose";
-// import blogPostRouter from "./api/blogPost/index.js";
-import customerRouter from "./api/customers/index.js";
+import usersRouter from "./api/users/index.js";
 import {
   badRequestHandler,
   notFoundHandler,
@@ -33,8 +32,7 @@ const corsOpts = {
 server.use(cors(corsOpts));
 
 // ******************************** ENDPOINTS *****************************************
-// server.use("/blogPosts", blogPostRouter);
-server.use("/customers", customerRouter);
+server.use("/users", usersRouter);
 
 // ***************************** ERROR HANDLERS ***************************************
 server.use(badRequestHandler);
