@@ -4,8 +4,8 @@ import moviesRouter from "./api/movies/index.js";
 import listEndpoints from "express-list-endpoints";
 import usersRouter from "./api/users/index.js";
 import cors from "cors";
+import mongoose from "mongoose";
 import filesRouter from "./api/files/index.js";
-// import blogPostsRouter from "./api/blogPosts/index.js";
 import createHttpError from "http-errors";
 import swagger from "swagger-ui-express";
 import yaml from "yamljs";
@@ -49,7 +49,12 @@ server.use(unauthorizedHandler);
 server.use(genericErrorHandler);
 server.use("/docs", swagger.serve, swagger.setup(yamlFile));
 
-server.listen(port, () => {
-  console.table(listEndpoints(server));
-  console.log("this is the port", port);
+mongoose.connect(process.env.MONGO_URL);
+
+mongoose.connection.on("connected", () => {
+  console.log("Successfully connected to Mongo!");
+  server.listen(port, () => {
+    console.table(listEndpoints(server));
+    console.log(`Server is running on port ${port}`);
+  });
 });
