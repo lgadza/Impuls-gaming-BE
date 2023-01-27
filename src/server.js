@@ -49,6 +49,7 @@ server.use(unauthorizedHandler);
 server.use(genericErrorHandler);
 server.use("/docs", swagger.serve, swagger.setup(yamlFile));
 
+mongoose.set("strictQuery", false);
 mongoose.connect(process.env.MONGO_URL);
 
 mongoose.connection.on("connected", () => {
