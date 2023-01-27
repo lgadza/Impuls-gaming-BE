@@ -44,7 +44,7 @@ usersRouter.get("/", async (req, res, next) => {
     //   path: "experience",
     // });
     res.send({
-      links: mongoQuery.links("http://localhost:3001/users", total),
+      links: mongoQuery.links("https://impulsgaming.cyclic.app/users", total),
       totalPages: Math.ceil(total / mongoQuery.options.limit),
       totalUsers: total,
       users,
