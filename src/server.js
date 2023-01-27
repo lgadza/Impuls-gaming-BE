@@ -1,11 +1,11 @@
 import express from "express";
 import { join } from "path";
-import moviesRouter from "./api/movies/index.js";
+import tournamentsRouter from "./api/tournaments/index.js";
 import listEndpoints from "express-list-endpoints";
 import usersRouter from "./api/users/index.js";
 import cors from "cors";
 import mongoose from "mongoose";
-import filesRouter from "./api/files/index.js";
+// import filesRouter from "./api/files/index.js";
 import createHttpError from "http-errors";
 import swagger from "swagger-ui-express";
 import yaml from "yamljs";
@@ -39,8 +39,8 @@ const corsOpts = {
 };
 server.use(cors(corsOpts));
 server.use(express.static(publicFolderPath));
-server.use("/medias", filesRouter);
-server.use("/medias", moviesRouter);
+// server.use("/medias", filesRouter);
+server.use("/tournaments", tournamentsRouter);
 server.use("/users", usersRouter);
 
 server.use(badRequestHandler);

@@ -1,7 +1,7 @@
 import { checkSchema, validationResult } from "express-validator";
 import createHttpError from "http-errors";
 
-const movieSchema = {
+const tournamentSchema = {
   title: {
     in: ["body"],
     isString: {
@@ -21,13 +21,13 @@ const movieSchema = {
     },
   },
 };
-export const checksMovieSchema = checkSchema(movieSchema);
+export const checkTournamentSchema = checkSchema(tournamentSchema);
 export const triggerBadRequest = (req, res, next) => {
   const errors = validationResult(req);
   console.log(errors.array());
   if (!errors.isEmpty()) {
     next(
-      createHttpError(400, "Errors during movie validation", {
+      createHttpError(400, "Errors during tournament validation", {
         errorsList: errors.array(),
       })
     );
