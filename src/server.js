@@ -2,6 +2,7 @@ import express from "express";
 import { join } from "path";
 import moviesRouter from "./api/movies/index.js";
 import listEndpoints from "express-list-endpoints";
+import usersRouter from "./api/users/index.js";
 import cors from "cors";
 import filesRouter from "./api/files/index.js";
 // import blogPostsRouter from "./api/blogPosts/index.js";
@@ -40,6 +41,7 @@ server.use(cors(corsOpts));
 server.use(express.static(publicFolderPath));
 server.use("/medias", filesRouter);
 server.use("/medias", moviesRouter);
+server.use("/users", usersRouter);
 
 server.use(badRequestHandler);
 server.use(notFoundHandler);
