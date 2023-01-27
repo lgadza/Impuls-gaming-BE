@@ -2,21 +2,21 @@ import { checkSchema, validationResult } from "express-validator";
 import createHttpError from "http-errors";
 
 const tournamentSchema = {
-  title: {
+  name: {
     in: ["body"],
     isString: {
       errorMessage: "title is mandatory field and has to be a string",
     },
   },
-  year: {
+  platform: {
     in: ["body"],
     isString: {
       errorMessage: "year is mandatory field and has to be a string",
     },
   },
-  type: {
+  size: {
     in: ["body"],
-    isString: {
+    isNumber: {
       errorMessage: "type is mandatory field and has to be a string",
     },
   },
