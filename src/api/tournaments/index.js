@@ -13,13 +13,16 @@ tournamentsRouter.post(
   async (req, res, next) => {
     try {
       const newTournament = new TournamentsModel(req.body);
-      console.log(newTournament);
 
       const duplicate = await TournamentsModel.findOne({
-        email: newTournament.email,
+        name: newTournament.name,
       });
+      console.log(duplicate);
       if (duplicate) {
-        next(createHttpError(400, "Email already exist"));
+        res
+          .status(400)
+          .send({ message: `Tournament name ${req.body.name} already exist` });
+        // next(createHttpError(400, "Tournament name already exist"));
       } else {
         const { _id } = await newTournament.save();
         res.status(201).send({ _id });

@@ -5,21 +5,21 @@ const tournamentSchema = {
   name: {
     in: ["body"],
     isString: {
-      errorMessage: "title is mandatory field and has to be a string",
+      errorMessage: "name is mandatory field and has to be a string",
     },
   },
   platform: {
     in: ["body"],
     isString: {
-      errorMessage: "year is mandatory field and has to be a string",
+      errorMessage: "platform is mandatory field and has to be a string",
     },
   },
-  size: {
-    in: ["body"],
-    isNumber: {
-      errorMessage: "type is mandatory field and has to be a string",
-    },
-  },
+  // size: {
+  //   in: ["body"],
+  //   Number: {
+  //     errorMessage: "size is mandatory field and has to be a number",
+  //   },
+  // },
 };
 export const checkTournamentSchema = checkSchema(tournamentSchema);
 export const triggerBadRequest = (req, res, next) => {
