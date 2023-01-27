@@ -45,7 +45,7 @@ usersRouter.get("/", async (req, res, next) => {
     // });
     res.send({
       links: mongoQuery.links("http://localhost:3001/users", total),
-      // totalUsers: Math.ceil(total / mongoQuery.options.limit),
+      totalPages: Math.ceil(total / mongoQuery.options.limit),
       totalUsers: total,
       users,
     });
