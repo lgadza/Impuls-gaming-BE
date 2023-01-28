@@ -135,7 +135,7 @@ tournamentsRouter.post(
 
         const updatedTournament = await TournamentsModel.findByIdAndUpdate(
           req.params.tournamentId,
-          { $push: { participants: tournamentToInsert } },
+          { $push: { tournamentParticipants: tournamentToInsert } },
           { new: true, runValidators: true }
         );
 
@@ -167,7 +167,7 @@ tournamentsRouter.get("/:tournamentId/participants", async (req, res, next) => {
   try {
     const tournament = await TournamentsModel.findById(req.params.tournamentId);
     if (tournament) {
-      res.send(tournament.participants);
+      res.send(tournament.tournamentParticipants);
     } else {
       next(
         createHttpError(
@@ -189,7 +189,7 @@ tournamentsRouter.get(
         req.params.tournamentId
       );
       if (tournament) {
-        const currentParticipant = tournament.participants.find(
+        const currentParticipant = tournament.tournamentParticipants.find(
           (tournament) => tournament._id.toString() === req.params.participantId
         );
         if (currentParticipant) {
@@ -225,12 +225,12 @@ tournamentsRouter.put(
       );
 
       if (tournament) {
-        const index = tournament.participants.findIndex(
+        const index = tournament.tournamentParticipants.findIndex(
           (tournament) => tournament._id.toString() === req.params.participantId
         );
         if (index !== -1) {
-          tournament.participants[index] = {
-            ...tournament.participants[index].toObject(),
+          tournament.tournamentParticipants[index] = {
+            ...tournament.tournamentParticipants[index].toObject(),
             ...req.body,
           };
 
@@ -264,7 +264,9 @@ tournamentsRouter.delete(
     try {
       const updatedTournament = await TournamentsModel.findByIdAndUpdate(
         req.params.tournamentId,
-        { $pull: { participants: { _id: req.params.participantId } } },
+        {
+          $pull: { tournamentParticipants: { _id: req.params.participantId } },
+        },
         { new: true }
       );
       if (updatedTournament) {

@@ -9,7 +9,7 @@ export const tournamentsSchema = new Schema(
     name: { type: String, required: true },
     discipline_cover: { type: String },
     discipline_name: { type: String },
-    participants: [participantModel],
+    tournamentParticipants: [participantModel],
     registration: {
       activation: {
         isRegistration: { type: Boolean, default: false },
