@@ -44,7 +44,7 @@ tournamentsRouter.get("/", async (req, res, next) => {
       .skip(mongoQuery.options.skip)
       .sort(mongoQuery.options.sort);
     // .populate({
-    //   path: "experience",
+    //   path: "participant",
     // });
     res.send({
       links: mongoQuery.links(
@@ -63,7 +63,7 @@ tournamentsRouter.get("/:tournamentId", async (req, res, next) => {
   try {
     const tournament = await TournamentsModel.findById(req.params.tournamentId);
     //   .populate({
-    //   path: "experience",
+    //   path: "participant",
     // });
     if (tournament) {
       res.send(tournament);
@@ -120,140 +120,167 @@ tournamentsRouter.delete("/:tournamentId", async (req, res, next) => {
   }
 });
 
-// ********************************** EMBEDDING**************************
-// tournamentsRouter.post("/:tournamentId/experiences", async (req, res, next) => {
-//   try {
-//     const currentExperience = req.body;
+// ********************************** EMBEDDING PARTICIPANTS**************************
+tournamentsRouter.post(
+  "/:tournamentId/participants",
+  async (req, res, next) => {
+    try {
+      const currentParticipant = req.body;
 
-//     if (currentExperience) {
-//       const tournamentToInsert = {
-//         ...req.body,
-//         experienceDate: new Date(),
-//       };
+      if (currentParticipant) {
+        const tournamentToInsert = {
+          ...req.body,
+          participantDate: new Date(),
+        };
 
-//       const updatedTournament = await TournamentsModel.findByIdAndUpdate(
-//         req.params.tournamentId,
-//         { $push: { experiences: tournamentToInsert } },
-//         { new: true, runValidators: true }
-//       );
+        const updatedTournament = await TournamentsModel.findByIdAndUpdate(
+          req.params.tournamentId,
+          { $push: { participants: tournamentToInsert } },
+          { new: true, runValidators: true }
+        );
 
-//       if (updatedTournament) {
-//         res.send(updatedTournament);
-//       } else {
-//         next(
-//           createHttpError(404, `Tournament with id ${req.params.tournamentId} not found!`)
-//         );
-//       }
-//     } else {
-//       next(createHttpError(404, `Tournament with id ${req.body.tournamentId} not found!`));
-//     }
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+        if (updatedTournament) {
+          res.send(updatedTournament);
+        } else {
+          next(
+            createHttpError(
+              404,
+              `Tournament with id ${req.params.tournamentId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.body.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
-// tournamentsRouter.get("/:tournamentId/experiences", async (req, res, next) => {
-//   try {
-//     const tournament = await TournamentsModel.findById(req.params.tournamentId);
-//     if (tournament) {
-//       res.send(tournament.experiences);
-//     } else {
-//       next(
-//         createHttpError(404, `Tournament with id ${req.params.tournamentId} not found!`)
-//       );
-//     }
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+tournamentsRouter.get("/:tournamentId/participants", async (req, res, next) => {
+  try {
+    const tournament = await TournamentsModel.findById(req.params.tournamentId);
+    if (tournament) {
+      res.send(tournament.participants);
+    } else {
+      next(
+        createHttpError(
+          404,
+          `Tournament with id ${req.params.tournamentId} not found!`
+        )
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
-// tournamentsRouter.get(
-//   "/:tournamentId/experiences/:experienceId",
-//   async (req, res, next) => {
-//     try {
-//       const tournament = await TournamentsModel.findById(req.params.tournamentId);
-//       if (tournament) {
-//         const currentExperience = tournament.experiences.find(
-//           (tournament) => tournament._id.toString() === req.params.experienceId
-//         );
-//         if (currentExperience) {
-//           res.send(currentExperience);
-//         } else {
-//           next(
-//             createHttpError(
-//               404,
-//               `Experience with id ${req.params.experienceId} not found!`
-//             )
-//           );
-//         }
-//       } else {
-//         next(
-//           createHttpError(404, `Tournament with id ${req.params.tournamentId} not found!`)
-//         );
-//       }
-//     } catch (error) {
-//       next(error);
-//     }
-//   }
-// );
+tournamentsRouter.get(
+  "/:tournamentId/participants/:participantId",
+  async (req, res, next) => {
+    try {
+      const tournament = await TournamentsModel.findById(
+        req.params.tournamentId
+      );
+      if (tournament) {
+        const currentParticipant = tournament.participants.find(
+          (tournament) => tournament._id.toString() === req.params.participantId
+        );
+        if (currentParticipant) {
+          res.send(currentParticipant);
+        } else {
+          next(
+            createHttpError(
+              404,
+              `Participant with id ${req.params.participantId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
-// tournamentsRouter.put(
-//   "/:tournamentId/experiences/:experienceId",
-//   async (req, res, next) => {
-//     try {
-//       const tournament = await TournamentsModel.findById(req.params.tournamentId);
+tournamentsRouter.put(
+  "/:tournamentId/participants/:participantId",
+  async (req, res, next) => {
+    try {
+      const tournament = await TournamentsModel.findById(
+        req.params.tournamentId
+      );
 
-//       if (tournament) {
-//         const index = tournament.experiences.findIndex(
-//           (tournament) => tournament._id.toString() === req.params.experienceId
-//         );
-//         if (index !== -1) {
-//           tournament.experiences[index] = {
-//             ...tournament.experiences[index].toObject(),
-//             ...req.body,
-//           };
+      if (tournament) {
+        const index = tournament.participants.findIndex(
+          (tournament) => tournament._id.toString() === req.params.participantId
+        );
+        if (index !== -1) {
+          tournament.participants[index] = {
+            ...tournament.participants[index].toObject(),
+            ...req.body,
+          };
 
-//           await tournament.save();
-//           res.send(tournament);
-//         } else {
-//           next(
-//             createHttpError(
-//               404,
-//               `Experience with id ${req.params.experienceId} not found!`
-//             )
-//           );
-//         }
-//       } else {
-//         next(
-//           createHttpError(404, `Tournament with id ${req.params.tournamentId} not found!`)
-//         );
-//       }
-//     } catch (error) {
-//       next(error);
-//     }
-//   }
-// );
+          await tournament.save();
+          res.send(tournament);
+        } else {
+          next(
+            createHttpError(
+              404,
+              `Participant with id ${req.params.participantId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
-// tournamentsRouter.delete(
-//   "/:tournamentId/experiences/:experienceId",
-//   async (req, res, next) => {
-//     try {
-//       const updatedTournament = await TournamentsModel.findByIdAndUpdate(
-//         req.params.tournamentId,
-//         { $pull: { experiences: { _id: req.params.experienceId } } },
-//         { new: true }
-//       );
-//       if (updatedTournament) {
-//         res.send(updatedTournament);
-//       } else {
-//         next(
-//           createHttpError(404, `Tournament with id ${req.params.tournamentId} not found!`)
-//         );
-//       }
-//     } catch (error) {
-//       next(error);
-//     }
-//   }
-// );
+tournamentsRouter.delete(
+  "/:tournamentId/participants/:participantId",
+  async (req, res, next) => {
+    try {
+      const updatedTournament = await TournamentsModel.findByIdAndUpdate(
+        req.params.tournamentId,
+        { $pull: { participants: { _id: req.params.participantId } } },
+        { new: true }
+      );
+      if (updatedTournament) {
+        res.send(updatedTournament);
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default tournamentsRouter;
