@@ -10,7 +10,21 @@ export const tournamentsSchema = new Schema(
     discipline_cover: { type: String },
     discipline_name: { type: String },
     participants: [participantModel],
-    registration: [registrationModel],
+    registration: {
+      activation: {
+        isRegistration: { type: Boolean, default: false },
+        registrationOpeningDate: { type: String, required: true },
+        registrationClosingDate: { type: String, required: true },
+      },
+      options: {
+        isRegistrationAutomatically: { type: Boolean },
+        isEmailNotificationAutomatically: { type: Boolean },
+      },
+      customization: {
+        validationMessage: { type: String },
+        refusalMessage: { type: String },
+      },
+    },
     structure: {
       general: {
         number: { type: Number },
