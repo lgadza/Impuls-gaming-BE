@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
-import participantModel from "./partcipantsModel.js";
+import participantModel from "./model/partcipantsModel.js";
+import registrationModel from "./model/registrationSettings.js";
 
 export const tournamentsSchema = new Schema(
   {
@@ -9,21 +10,7 @@ export const tournamentsSchema = new Schema(
     discipline_cover: { type: String },
     discipline_name: { type: String },
     participants: [participantModel],
-    registration: {
-      activation: {
-        isRegistration: { type: Boolean },
-        registrationOpeningDate: { type: String },
-        registrationClosingDate: { type: String },
-      },
-      options: {
-        isRegistrationAutomatically: { type: Boolean },
-        isEmailNotificationAutomatically: { type: Boolean },
-      },
-      customization: {
-        validationMessage: { type: String },
-        refusalMessage: { type: String },
-      },
-    },
+    registration: { registrationModel },
     structure: {
       general: {
         number: { type: Number },
