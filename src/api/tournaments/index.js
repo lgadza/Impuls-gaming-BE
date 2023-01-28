@@ -24,8 +24,8 @@ tournamentsRouter.post(
           .send({ message: `Tournament name ${req.body.name} already exist` });
         // next(createHttpError(400, "Tournament name already exist"));
       } else {
-        const { _id } = await newTournament.save();
-        res.status(201).send({ _id });
+        const tournament = await newTournament.save();
+        res.status(201).send(tournament);
       }
     } catch (error) {
       next(error);
