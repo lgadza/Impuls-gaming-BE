@@ -6,6 +6,7 @@ const participantModel = new Schema({
   surname: { type: String, required: true },
   email: { type: String, required: true },
   nickname: { type: String, required: true },
+  terms: { type: Boolean, required: true },
 });
 
 export default participantModel;
