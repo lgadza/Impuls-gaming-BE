@@ -10,7 +10,7 @@ export const tournamentsSchema = new Schema(
     discipline_cover: { type: String },
     discipline_name: { type: String },
     participants: [participantModel],
-    registration: { registrationModel },
+    registration: [registrationModel],
     structure: {
       general: {
         number: { type: Number },
