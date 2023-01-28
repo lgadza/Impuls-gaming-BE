@@ -10,6 +10,9 @@ export const tournamentsSchema = new Schema(
     discipline_cover: { type: String },
     discipline_name: { type: String },
     tournamentParticipants: [participantModel],
+    location: { type: String },
+    startDate: { type: String },
+    endDate: { type: String },
     registration: {
       activation: {
         isRegistration: { type: Boolean, default: false },
