@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
+import participantModel from "./partcipantsModel.js";
 
 export const tournamentsSchema = new Schema(
   {
     name: { type: String, required: true },
     discipline_cover: { type: String },
     discipline_name: { type: String },
+    participants: [participantModel],
     registration: {
       activation: {
         isRegistration: { type: Boolean },
