@@ -43,7 +43,7 @@ export const tournamentsSchema = new Schema(
       },
     },
     participants: {
-      isCheck_in: { type: Boolean },
+      isCheck_in: { type: Boolean, default: false },
       checkInOpeningDate: { type: String },
       checkInClosingDate: { type: String },
     },
