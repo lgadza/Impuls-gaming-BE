@@ -13,8 +13,8 @@ export const tournamentsSchema = new Schema(
     registration: {
       activation: {
         isRegistration: { type: Boolean, default: false },
-        registrationOpeningDate: { type: String, required: true },
-        registrationClosingDate: { type: String, required: true },
+        registrationOpeningDate: { type: String },
+        registrationClosingDate: { type: String },
       },
       options: {
         isRegistrationAutomatically: { type: Boolean },
