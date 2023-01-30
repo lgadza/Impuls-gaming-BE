@@ -32,9 +32,9 @@ export const tournamentsSchema = new Schema(
       stage_type: { type: String },
       general: {
         number: { type: Number },
-        size: { type: Number, default: undefined },
+        size: { type: Number },
         divisions: { type: Number },
-        name: { type: String },
+        name: { type: String, default: undefined },
       },
       advanced: {
         groupComp: { type: String },
