@@ -29,14 +29,15 @@ export const tournamentsSchema = new Schema(
       },
     },
     structure: {
+      stage_type: { type: String },
       general: {
         number: { type: Number },
         size: { type: Number },
-        numberOfDivisions: { type: Number },
+        divisions: { type: Number },
         name: { type: String },
       },
       advanced: {
-        groupComposition: { type: String },
+        groupComp: { type: String },
         pointsAtrribution: {
           win: { isWin: { type: Boolean }, points: { type: Number } },
           draw: { isDraw: { type: Boolean }, points: { type: Number } },
@@ -56,7 +57,7 @@ export const tournamentsSchema = new Schema(
         isPlacement: { type: Boolean },
       },
       matchSettings: {
-        option: { type: String },
+        matchFormat: { type: String },
       },
     },
     participants: {
@@ -70,6 +71,7 @@ export const tournamentsSchema = new Schema(
     platform: { type: String, required: true },
     size: { type: Number, required: true },
   },
+
   {
     timestamps: true,
   }
