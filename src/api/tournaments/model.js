@@ -34,7 +34,7 @@ export const tournamentsSchema = new Schema(
         number: { type: Number },
         size: { type: Number },
         divisions: { type: Number },
-        name: { type: String, default: undefined },
+        name: { type: String, default: "name" },
       },
       advanced: {
         groupComp: { type: String },
