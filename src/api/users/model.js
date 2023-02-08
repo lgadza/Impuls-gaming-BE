@@ -8,6 +8,8 @@ export const UsersSchema = new Schema(
     name: { type: String, required: true },
     surname: { type: String, required: true },
     email: { type: String, required: true },
+    password: { type: String, required: true },
+    terms: { type: Boolean, required: true },
     area: { type: String },
     bio: { type: String },
     role: { type: String, enum: ["User", "Admin"], default: "User" },
