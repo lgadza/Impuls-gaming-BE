@@ -1,102 +1,121 @@
 import express from "express";
 import createHttpError from "http-errors";
-import UsersModel from "./model.js";
 import q2m from "query-to-mongo";
 import { checkUserSchema, triggerBadRequest } from "./validator.js";
+import { adminOnlyMiddleware } from "../../lib/auth/adminOnly.js";
+import { JWTAuthMiddleware } from "../../lib/auth/jwtAuth.js";
+import { createAccessToken } from "../../lib/auth/tools.js";
+import UsersModel from "./model.js";
 
 const usersRouter = express.Router();
 
-usersRouter.post(
+usersRouter.post("/register ", async (req, res, next) => {
+  try {
+    const newUser = new UsersModel(req.body);
+    const { _id } = await newUser.save();
+    res.status(201).send({ _id });
+  } catch (error) {
+    next(error);
+  }
+});
+
+usersRouter.get(
   "/",
-  checkUserSchema,
-  triggerBadRequest,
+  JWTAuthMiddleware,
+  adminOnlyMiddleware,
   async (req, res, next) => {
     try {
-      const newUser = new UsersModel(req.body);
-      console.log(newUser);
-
-      const duplicate = await UsersModel.findOne({
-        email: newUser.email,
-      });
-      if (duplicate) {
-        next(createHttpError(400, "Email already exist"));
-      } else {
-        const { _id } = await newUser.save();
-        res.status(201).send({ _id });
-      }
+      const users = await UsersModel.find({});
+      res.send(users);
     } catch (error) {
       next(error);
     }
   }
 );
-usersRouter.get("/", async (req, res, next) => {
+
+usersRouter.get("/me", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    const mongoQuery = q2m(req.query);
-    const total = await UsersModel.countDocuments(mongoQuery.criteria);
-    const users = await UsersModel.find(
-      mongoQuery.criteria,
-      mongoQuery.options.fields
-    )
-      .limit(mongoQuery.options.limit)
-      .skip(mongoQuery.options.skip)
-      .sort(mongoQuery.options.sort);
-    // .populate({
-    //   path: "experience",
-    // });
-    res.send({
-      links: mongoQuery.links("https://impulsgaming.cyclic.app/users", total),
-      totalPages: Math.ceil(total / mongoQuery.options.limit),
-      totalUsers: total,
-      users,
-    });
+    const user = await UsersModel.findById(req.user._id);
+    res.send(user);
   } catch (error) {
     next(error);
   }
 });
-usersRouter.get("/:userId", async (req, res, next) => {
-  try {
-    const user = await UsersModel.findById(req.params.userId);
-    //   .populate({
-    //   path: "experience",
-    // });
-    if (user) {
-      res.send(user);
-    } else {
-      next(
-        createHttpError(404, `User with id ${req.params.userId} is not found`)
-      );
-    }
-  } catch (error) {
-    next(error);
-  }
-});
-usersRouter.put("/:userId", async (req, res, next) => {
+
+usersRouter.put("/me", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const updatedUser = await UsersModel.findByIdAndUpdate(
-      req.params.userId,
+      req.user._id,
       req.body,
-      { new: true, runValidators: true }
+      {
+        new: true,
+        runValidators: true,
+      }
     );
-    if (updatedUser) {
-      res.send(updatedUser);
-    } else {
-      next(
-        createHttpError(404, `User with id ${req.params.userId} is not found`)
-      );
-    }
+    res.send(updatedUser);
   } catch (error) {
     next(error);
   }
 });
-usersRouter.delete("/:userId", async (req, res, next) => {
+
+usersRouter.delete("/me", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    const deletedUser = await UsersModel.findByIdAndDelete(req.params.userId);
-    if (deletedUser) {
-      res.status(204).send();
+    await UsersModel.findByIdAndUpdate(req.user._id);
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+});
+
+usersRouter.get("/:userId", JWTAuthMiddleware, async (req, res, next) => {
+  try {
+    const user = await UsersModel.findById(req.params.userId);
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+});
+usersRouter.put(
+  "/:userId",
+  JWTAuthMiddleware,
+  adminOnlyMiddleware,
+  async (req, res, next) => {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+usersRouter.delete(
+  "/:userId",
+  JWTAuthMiddleware,
+  adminOnlyMiddleware,
+  async (req, res, next) => {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+usersRouter.post("/login", async (req, res, next) => {
+  try {
+    // 1. Obtain the credentials from req.body
+    const { email, password } = req.body;
+
+    // 2. Verify the credentials
+    const user = await UsersModel.checkCredentials(email, password);
+
+    if (user) {
+      // 3.1 If credentials are fine --> generate an access token (JWT) and send it back as a response
+      const payload = { _id: user._id, role: user.role };
+
+      const accessToken = await createAccessToken(payload);
+      res.send({ accessToken });
     } else {
-      next(
-        createHttpError(404, `User with id ${req.params.userId} is not found`)
-      );
+      // 3.2 If credentials are NOT fine --> trigger a 401 error
+      next(createHttpError(401, "Credentials are not ok!"));
     }
   } catch (error) {
     next(error);
