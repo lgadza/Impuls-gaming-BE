@@ -45,7 +45,7 @@ usersRouter.get(
     console.log(req.user);
     // res.send({ accessToken: req.user.accessToken });
     res.redirect(
-      `${process.env.FE_PROD_URL}?accessToken=${req.user.accessToken}`
+      `${process.env.FE_PROD_URL}/user-page?accessToken=${req.user.accessToken}`
     );
   }
 );
