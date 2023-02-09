@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import bcrypt from "bcrypt";
 import requestSchema from "../friendRequest/model.js";
 const { Schema, model } = mongoose;
 
@@ -63,7 +63,7 @@ UsersSchema.static("checkCredentials", async function (email, password) {
 
   // 1. Find by email
   const user = await this.findOne({ email }); //"this" here represents the User Model
-
+  console.log(user.password);
   if (user) {
     // 2. If the user is found --> compare plain password with the hashed one
     const passwordMatch = await bcrypt.compare(password, user.password);

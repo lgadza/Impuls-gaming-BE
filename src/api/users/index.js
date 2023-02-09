@@ -119,6 +119,7 @@ usersRouter.post("/login", async (req, res, next) => {
       next(createHttpError(401, "Credentials are not ok!"));
     }
   } catch (error) {
+    console.log(error);
     next(error);
   }
 });
