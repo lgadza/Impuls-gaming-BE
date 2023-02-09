@@ -6,6 +6,7 @@ import { adminOnlyMiddleware } from "../../lib/auth/adminOnly.js";
 import { JWTAuthMiddleware } from "../../lib/auth/jwtAuth.js";
 import { createAccessToken } from "../../lib/auth/tools.js";
 import UsersModel from "./model.js";
+import passport from "passport";
 
 const usersRouter = express.Router();
 
@@ -33,7 +34,21 @@ usersRouter.get(
     }
   }
 );
-
+usersRouter.get(
+  "/googleLogin",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+usersRouter.get(
+  "/googleRedirect",
+  passport.authenticate("google", { session: false }),
+  async (req, res, next) => {
+    console.log(req.user);
+    // res.send({ accessToken: req.user.accessToken });
+    res.redirect(
+      `${process.env.FE_PROD_URL}?accessToken=${req.user.accessToken}`
+    );
+  }
+);
 usersRouter.get("/me", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const user = await UsersModel.findById(req.user._id);
