@@ -7,19 +7,39 @@ import { JWTAuthMiddleware } from "../../lib/auth/jwtAuth.js";
 import { createAccessToken } from "../../lib/auth/tools.js";
 import UsersModel from "./model.js";
 import passport from "passport";
+import { sendRegistrationEmail } from "../../lib/email-tools.js";
+import sgMail from "@sendgrid/mail";
 
+sgMail.setApiKey(process.env.SENDGRID_KEY);
 const usersRouter = express.Router();
 
-usersRouter.post("/register", async (req, res, next) => {
-  try {
-    const newUser = new UsersModel(req.body);
-    const { _id } = await newUser.save();
-    res.status(201).send({ _id });
-  } catch (error) {
-    console.log(error);
-    next(error);
+usersRouter.post(
+  "/register",
+  checkUserSchema,
+  triggerBadRequest,
+  async (req, res, next) => {
+    try {
+      const { email } = req.body;
+      const user = await UsersModel.findOne({ email });
+      if (user) {
+        return res.send({
+          message: " This email has been already registered, Please login",
+        });
+      } else {
+        const newUser = new UsersModel(req.body);
+        await sendRegistrationEmail(email, req.body);
+        const { _id } = await newUser.save();
+        res.status(201).send({
+          _id,
+          message: "  We've sent a verification link on your email address",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
   }
-});
+);
 
 usersRouter.get(
   "/",

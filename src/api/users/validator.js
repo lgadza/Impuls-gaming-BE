@@ -20,12 +20,12 @@ const userSchema = {
       errorMessage: "Email is mandatory field and needs to be a string!",
     },
   },
-  //   username: {
-  //     in: ["body"],
-  //     isString: {
-  //       errorMessage: "Username is mandatory field and needs to be a string!",
-  //     },
-  //   },
+  password: {
+    in: ["body"],
+    isString: {
+      errorMessage: "Password is mandatory field !",
+    },
+  },
 };
 
 export const checkUserSchema = checkSchema(userSchema);
