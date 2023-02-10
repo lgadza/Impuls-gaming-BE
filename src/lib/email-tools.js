@@ -18,7 +18,6 @@ export const sendRegistrationEmail = async (recipientAddress, userData) => {
     <span>@impulsgaming</span>
     <div>`,
   };
-  console.log(msg);
   await sgMail.send(msg);
   await console.log("email sent ....");
 };
