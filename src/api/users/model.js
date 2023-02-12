@@ -16,7 +16,7 @@ export const UsersSchema = new Schema(
     role: { type: String, enum: ["User", "Admin"], default: "User" },
     connections: { pending: [requestSchema], active: [] },
     nickname: { type: String },
-    organization: { type: String },
+    organization: { type: String, default: "Impuls Gaming" },
     image: { type: String },
   },
   {
