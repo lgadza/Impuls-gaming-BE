@@ -21,31 +21,22 @@ filesRouter.post(
   "/:userId/avatar",
   cloudinaryUploader,
   async (req, res, next) => {
-    // "avatar" needs to match exactly to the name of the field appended in the FormData object coming from the FE
-    // If they do not match, multer will not find the file
     try {
-      /* const originalFileExtension = extname(req.file.originalname)
-    const fileName = req.params.userId + originalFileExtension
-    await saveUsersAvatars(fileName, req.file.buffer)
-    const url = `http://localhost:3001/img/users/${fileName}`
- */
-
-      console.log(req.file);
       const url = req.file.path;
       const updatedUser = await UsersModel.findByIdAndUpdate(
         req.params.userId,
-        req.body,
+        { avatar: req.file.path },
         { new: true, runValidators: true }
       );
+      await updatedUser.save();
       if (updatedUser) {
-        res.send("File uploaded");
+        res.send(updatedUser);
+        // res.send("File uploaded");
       } else {
         next(
           createHttpError(404, `User with id ${req.params.userId} not found!`)
         );
       }
-
-      // In FE <img src="http://localhost:3001/img/users/magic.gif" />
     } catch (error) {
       next(error);
     }
