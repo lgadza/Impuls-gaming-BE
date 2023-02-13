@@ -5,6 +5,7 @@ import { checkUserSchema, triggerBadRequest } from "./validator.js";
 import { adminOnlyMiddleware } from "../../lib/auth/adminOnly.js";
 import { JWTAuthMiddleware } from "../../lib/auth/jwtAuth.js";
 import { createAccessToken } from "../../lib/auth/tools.js";
+import { createLogoutToken } from "../../lib/auth/tools.js";
 import UsersModel from "./model.js";
 import passport from "passport";
 import { sendRegistrationEmail } from "../../lib/email-tools.js";
@@ -149,6 +150,30 @@ usersRouter.post("/login", async (req, res, next) => {
 
       const accessToken = await createAccessToken(payload);
       res.send({ accessToken });
+    } else {
+      // 3.2 If credentials are NOT fine --> trigger a 401 error
+      next(createHttpError(401, "Credentials are not ok!"));
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+usersRouter.post("/logout", async (req, res, next) => {
+  try {
+    // 1. Obtain the credentials from req.body
+    const { email, password } = req.body;
+
+    // 2. Verify the credentials
+    const user = await UsersModel.checkCredentials(email, password);
+
+    if (user) {
+      // 3.1 If credentials are fine --> generate an access token (JWT) and send it back as a response
+      const payload = { _id: user._id, role: user.role };
+
+      const logoutToken = await createLogoutToken(payload);
+      res.send({ logoutToken: "" });
+      // res.redirect(`${process.env.FE_PROD_URL}`);
     } else {
       // 3.2 If credentials are NOT fine --> trigger a 401 error
       next(createHttpError(401, "Credentials are not ok!"));
