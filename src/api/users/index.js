@@ -159,24 +159,21 @@ usersRouter.post("/login", async (req, res, next) => {
     next(error);
   }
 });
-usersRouter.post("/logout", async (req, res, next) => {
+usersRouter.get("/logout/:userId", async (req, res, next) => {
   try {
-    // 1. Obtain the credentials from req.body
-    const { email, password } = req.body;
+    const userId = req.params.userId;
 
-    // 2. Verify the credentials
-    const user = await UsersModel.checkCredentials(email, password);
+    const user = await UsersModel.findById(req.params.userId);
 
     if (user) {
-      // 3.1 If credentials are fine --> generate an access token (JWT) and send it back as a response
       const payload = { _id: user._id, role: user.role };
 
       const logoutToken = await createLogoutToken(payload);
       res.send({ logoutToken: "" });
       // res.redirect(`${process.env.FE_PROD_URL}`);
+      res.redirect(`${process.env.FE_DEV_URL}`);
     } else {
-      // 3.2 If credentials are NOT fine --> trigger a 401 error
-      next(createHttpError(401, "Credentials are not ok!"));
+      next(createHttpError(401, `User with id ${userId} not found!`));
     }
   } catch (error) {
     console.log(error);
