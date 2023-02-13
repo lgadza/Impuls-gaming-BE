@@ -8,6 +8,12 @@ export const UsersSchema = new Schema(
     name: { type: String, required: true },
     surname: { type: String, required: true },
     email: { type: String, required: true },
+    avatar: {
+      type: String,
+      required: false,
+      default:
+        "https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_960_720.png",
+    },
     password: { type: String, required: false },
     emailVerified: { type: Boolean, default: false },
     terms: { type: Boolean, required: false },

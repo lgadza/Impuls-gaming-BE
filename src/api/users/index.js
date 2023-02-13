@@ -170,8 +170,6 @@ usersRouter.get("/logout/:userId", async (req, res, next) => {
 
       const logoutToken = await createLogoutToken(payload);
       res.send({ logoutToken: "" });
-      // res.redirect(`${process.env.FE_PROD_URL}`);
-      res.redirect(`${process.env.FE_DEV_URL}`);
     } else {
       next(createHttpError(401, `User with id ${userId} not found!`));
     }

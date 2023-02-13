@@ -17,6 +17,7 @@ import {
   badRequestHandler,
   genericErrorHandler,
 } from "./api/errorHandler.js";
+import filesRouter from "./api/files/index.js";
 const server = express();
 // const port = 3001;
 const port = process.env.PORT || 3001;
@@ -48,6 +49,7 @@ server.use(express.static(publicFolderPath));
 // ****************************** ENDPOINTS ****************************
 server.use("/tournaments", tournamentsRouter);
 server.use("/users", usersRouter);
+server.use("/files", filesRouter);
 // *************************** ERROR HANDLERS **************************
 server.use(badRequestHandler);
 server.use(notFoundHandler);

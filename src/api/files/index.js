@@ -1,137 +1,73 @@
-// import express from "express";
-// import multer from "multer";
-// import { extname } from "path";
-// import json2csv from "json2csv";
-// import httpErrors from "http-errors";
-// // *********this is local not when hosted online******************
-// import { dirname, join } from "path";
-// import { fileURLToPath } from "url";
+import express from "express";
+import multer from "multer";
+import { extname } from "path";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { saveUsersAvatars } from "../../lib/fs-tools.js";
+import UsersModel from "../users/model.js";
+const filesRouter = express.Router();
 
-// // ************************************************
+const cloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "impulsgaming/img/users",
+    },
+  }),
+  limits: { fileSize: 1024 * 1024 * 2 },
+}).single("avatar");
 
-// const { NotFound, Unauthorised, BadRequest } = httpErrors;
-// const moviesJSONPath = join(
-//   dirname(fileURLToPath(import.meta.url)),
-//   "movies.json"
-// );
+filesRouter.post(
+  "/:userId/avatar",
+  cloudinaryUploader,
+  async (req, res, next) => {
+    // "avatar" needs to match exactly to the name of the field appended in the FormData object coming from the FE
+    // If they do not match, multer will not find the file
+    try {
+      /* const originalFileExtension = extname(req.file.originalname)
+    const fileName = req.params.userId + originalFileExtension
+    await saveUsersAvatars(fileName, req.file.buffer)
+    const url = `http://localhost:3001/img/users/${fileName}`
+ */
 
-// import {
-//   saveMoviesPoster,
-//   getMovies,
-//   writeMovies,
-// } from "../../lib/fs-tools.js";
-// import { v2 as cloudinary } from "cloudinary";
-// import { CloudinaryStorage } from "multer-storage-cloudinary";
-// import { getMovieJSONReadableStream } from "../../lib/fs-tools.js";
-// import { pipeline } from "stream";
-// import { createGzip } from "zlib";
-// import {
-//   asyncPDFGeneration,
-//   getPDFReadableStream,
-// } from "../../lib/pdf-tools.js";
+      console.log(req.file);
+      const url = req.file.path;
+      const updatedUser = await UsersModel.findByIdAndUpdate(
+        req.params.userId,
+        req.body,
+        { new: true, runValidators: true }
+      );
+      if (updatedUser) {
+        res.send("File uploaded");
+      } else {
+        next(
+          createHttpError(404, `User with id ${req.params.userId} not found!`)
+        );
+      }
 
-// const filesRouter = express.Router();
-// const cloudinaryUploader = multer({
-//   storage: new CloudinaryStorage({
-//     cloudinary,
-//     params: {
-//       folder: "img/covers",
-//     },
-//   }),
-// }).single("cover");
+      // In FE <img src="http://localhost:3001/img/users/magic.gif" />
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
-// filesRouter.post(
-//   "/:movieImdbID/poster",
-//   multer().single("cover"),
-//   // cloudinaryUploader,
-//   async (req, res, next) => {
-//     try {
-//       const originalFileExtension = extname(req.file.originalname);
-//       const fileName = req.params.movieImdbID + originalFileExtension;
+filesRouter.post(
+  "/multiple",
+  multer().array("avatars"),
+  async (req, res, next) => {
+    try {
+      console.log("FILES:", req.files);
+      await Promise.all(
+        req.files.map((file) =>
+          saveUsersAvatars(file.originalname, file.buffer)
+        )
+      );
+      res.send("File uploaded");
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
-//       await saveMoviesPoster(fileName, req.file.buffer);
-
-//       const url = `http://localhost:3001/img/movies/${fileName}`;
-
-//       const movies = await getMovies();
-
-//       const index = movies.findIndex(
-//         (movie) => movie.imdbID === req.params.movieImdbID
-//       );
-
-//       if (index !== -1) {
-//         const oldMovie = movies[index];
-
-//         const Poster = url;
-//         const updatedMovie = { ...oldMovie, Poster, updatedAt: new Date() };
-
-//         movies[index] = updatedMovie;
-
-//         await writeMovies(movies);
-//       }
-
-//       res.send("File uploaded");
-//     } catch (error) {
-//       next(error);
-//     }
-//   }
-// );
-// filesRouter.get("/:movieImdbID/pdf", async (req, res, next) => {
-//   console.log("firing", req.params.movieImdbID);
-//   try {
-//     res.setHeader(
-//       "Content-Disposition",
-//       "attachment; filename=movieDetails.pdf"
-//     );
-//     const movies = await getMovies(moviesJSONPath);
-//     const foundMovie = movies.find(
-//       (movie) => movie.imdbID === req.params.movieImdbID
-//     );
-//     if (foundMovie) {
-//       const source = getPDFReadableStream(foundMovie);
-//       const destination = res;
-//       pipeline(source, destination, (err) => {
-//         if (err) console.log(err);
-//       });
-//     } else {
-//       next(NotFound(`Movie id ${req.params.movieImdbID} not found`));
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     next(error);
-//   }
-// });
-
-// filesRouter.get("/movies_csv", (req, res, next) => {
-//   try {
-//     res.setHeader("Content-Disposition", "attachment; filename=movies.csv");
-
-//     const source = getMovieJSONReadableStream();
-//     const transform = new json2csv.Transform({
-//       fields: ["title", "year", "type"],
-//     });
-//     const destination = res;
-//     pipeline(source, transform, destination, (err) => {
-//       if (err) console.log(err);
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     next(error);
-//   }
-// });
-
-// filesRouter.get("/:movieImdbID/asyncPDF", async (req, res, next) => {
-//   try {
-//     const movies = await getMovies();
-//     const foundMovie = movies.find(
-//       (movie) => movie.imdbID === req.params.movieImdbID
-//     );
-//     await asyncPDFGeneration(foundMovie);
-//     res.send();
-//   } catch (error) {
-//     console.log(error);
-//     next(error);
-//   }
-// });
-
-// export default filesRouter;
+export default filesRouter;
