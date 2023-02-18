@@ -7,10 +7,12 @@ import cors from "cors";
 import mongoose from "mongoose";
 import googleStrategy from "./lib/auth/google.js";
 import passport from "passport";
-// import filesRouter from "./api/files/index.js";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import createHttpError from "http-errors";
 import swagger from "swagger-ui-express";
 import yaml from "yamljs";
+import { newConnectionHandler } from "./api/chats/index.js";
 import {
   unauthorizedHandler,
   notFoundHandler,
@@ -18,9 +20,15 @@ import {
   genericErrorHandler,
 } from "./api/errorHandler.js";
 import filesRouter from "./api/files/index.js";
-const server = express();
-// const port = 3001;
+
+const expressServer = express();
+
 const port = process.env.PORT || 3001;
+
+const httpServer = createServer(expressServer);
+const io = new Server(httpServer);
+
+io.on("connection", newConnectionHandler);
 passport.use("google", googleStrategy);
 const publicFolderPath = join(process.cwd(), "./public");
 
@@ -40,30 +48,31 @@ const corsOpts = {
     }
   },
 };
-server.use(express.json());
-server.use(cors());
-server.use(passport.initialize());
-server.use(cors(corsOpts));
-server.use(express.static(publicFolderPath));
-// server.use("/medias", filesRouter);
+expressServer.use(express.json());
+expressServer.use(cors());
+expressServer.use(passport.initialize());
+expressServer.use(cors(corsOpts));
+expressServer.use(express.static(publicFolderPath));
+// ************************************ SOCKET.IO ********************************
+
 // ****************************** ENDPOINTS ****************************
-server.use("/tournaments", tournamentsRouter);
-server.use("/users", usersRouter);
-server.use("/files", filesRouter);
+expressServer.use("/tournaments", tournamentsRouter);
+expressServer.use("/users", usersRouter);
+expressServer.use("/files", filesRouter);
 // *************************** ERROR HANDLERS **************************
-server.use(badRequestHandler);
-server.use(notFoundHandler);
-server.use(unauthorizedHandler);
-server.use(genericErrorHandler);
-server.use("/docs", swagger.serve, swagger.setup(yamlFile));
+expressServer.use(badRequestHandler);
+expressServer.use(notFoundHandler);
+expressServer.use(unauthorizedHandler);
+expressServer.use(genericErrorHandler);
+expressServer.use("/docs", swagger.serve, swagger.setup(yamlFile));
 
 mongoose.set("strictQuery", false);
 mongoose.connect(process.env.MONGO_URL);
 
 mongoose.connection.on("connected", () => {
   console.log("Successfully connected to Mongo!");
-  server.listen(port, () => {
-    console.table(listEndpoints(server));
-    console.log(`Server is running on port ${port}`);
+  httpServer.listen(port, () => {
+    console.table(listEndpoints(expressServer));
+    console.log(`ExpressServer is running on port ${port}`);
   });
 });
