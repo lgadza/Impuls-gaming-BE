@@ -1,10 +1,17 @@
+import ChatsModel from "./model.js";
+import express from "express";
+import { io } from "../../server.js";
+const chatsRouter = express.Router();
+
 let onlineUsers = [];
 
-export const newConnectionHandler = (newClient) => {
+export const newConnectionHandler = async (newClient) => {
   console.log("NEW CONNECTION:", newClient.id);
 
-  // 1. Emit a "welcome" event to the connected client
-  newClient.emit("welcome", { message: `Hello ${newClient.id}` });
+  // Load the most recent messages from the database
+  const messages = await ChatsModel.find().sort("-timestamp").limit(100);
+  // Send the messages to the client
+  newClient.emit("message", messages);
 
   // 2. Listen to an event emitted by the FE called "setUsername", this event is going to contain the username in the payload
   newClient.on("setUsername", (payload) => {
@@ -20,15 +27,11 @@ export const newConnectionHandler = (newClient) => {
   });
 
   // 3. Listen to "sendMessage" event, this is received when an user sends a new message
-  newClient.on("sendMessage", (message) => {
-    console.log("NEW MESSAGE:", message);
+  newClient.on("sendMessage", async (message) => {
+    message = new ChatsModel(message.message);
+    await message.save();
     // 3.1 Whenever we receive that new message we have to propagate that message to everybody but not sender
-    newClient.broadcast.emit("newMessage", message);
-  });
-  newClient.on("typingStatus", (status) => {
-    console.log("NEW STATUS:", status);
-    // 3.1 Whenever we receive that new message we have to propagate that message to everybody but not sender
-    newClient.broadcast.emit("isTyping", status);
+    newClient.emit("newMessage", message);
   });
 
   // 4. Listen to an event called "disconnect", this is NOT a custom event!! This event happens when an user closes browser/tab
@@ -37,3 +40,16 @@ export const newConnectionHandler = (newClient) => {
     newClient.broadcast.emit("updateOnlineUsersList", onlineUsers);
   });
 };
+chatsRouter.post("/", async (req, res, next) => {
+  const content = req.body;
+  console.log(content);
+  // Save the message to the database
+  const message = new ChatsModel(content);
+  await message.save();
+
+  // Emit the message event to all connected clients
+  io.emit("message", [message]);
+
+  res.json({ message: "Message sent" });
+});
+export default chatsRouter;

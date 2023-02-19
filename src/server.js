@@ -2,6 +2,7 @@ import express from "express";
 import { join } from "path";
 import tournamentsRouter from "./api/tournaments/index.js";
 import listEndpoints from "express-list-endpoints";
+import chatsRouter from "./api/chats/index.js";
 import usersRouter from "./api/users/index.js";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -26,7 +27,7 @@ const expressServer = express();
 const port = process.env.PORT || 3001;
 
 const httpServer = createServer(expressServer);
-const io = new Server(httpServer);
+export const io = new Server(httpServer);
 
 io.on("connection", newConnectionHandler);
 passport.use("google", googleStrategy);
@@ -59,6 +60,7 @@ expressServer.use(express.static(publicFolderPath));
 expressServer.use("/tournaments", tournamentsRouter);
 expressServer.use("/users", usersRouter);
 expressServer.use("/files", filesRouter);
+expressServer.use("/messages", chatsRouter);
 // *************************** ERROR HANDLERS **************************
 expressServer.use(badRequestHandler);
 expressServer.use(notFoundHandler);
