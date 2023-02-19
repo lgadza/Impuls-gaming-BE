@@ -9,7 +9,7 @@ export const newConnectionHandler = async (newClient) => {
   console.log("NEW CONNECTION:", newClient.id);
 
   // Load the most recent messages from the database
-  const messages = await ChatsModel.find().sort("-timestamp").limit(100);
+  const messages = await ChatsModel.find().sort("-timestamp").limit(10);
   // Send the messages to the client
   newClient.emit("message", messages);
 

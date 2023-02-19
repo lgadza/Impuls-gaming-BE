@@ -28,7 +28,7 @@ const port = process.env.PORT || 3001;
 
 const httpServer = createServer(expressServer);
 export const io = new Server(httpServer);
-
+io.set("origins", "*:*");
 io.on("connection", newConnectionHandler);
 passport.use("google", googleStrategy);
 const publicFolderPath = join(process.cwd(), "./public");
