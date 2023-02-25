@@ -7,9 +7,9 @@ let onlineUsers = [];
 
 export const newConnectionHandler = async (newClient) => {
   console.log("NEW CONNECTION:", newClient.id);
+  const messages = await ChatsModel.find().sort("-timestamp").limit(30);
 
   // Load the most recent messages from the database
-  const messages = await ChatsModel.find().sort("-timestamp").limit(10);
   // Send the messages to the client
   newClient.emit("message", messages);
 
@@ -27,11 +27,17 @@ export const newConnectionHandler = async (newClient) => {
   });
 
   // 3. Listen to "sendMessage" event, this is received when an user sends a new message
-  newClient.on("sendMessage", async (message) => {
+  newClient.on("sendMessage", (message) => {
     message = new ChatsModel(message.message);
-    await message.save();
+    message.save();
     // 3.1 Whenever we receive that new message we have to propagate that message to everybody but not sender
-    newClient.emit("newMessage", message);
+    newClient.broadcast.emit("newMessage", message);
+    // if (room === "") {
+    // newClient.broadcast.emit("newMessage", message);
+
+    // } else {
+    //   newClient.to(room).emit("newMessage", message);
+    // }
   });
 
   // 4. Listen to an event called "disconnect", this is NOT a custom event!! This event happens when an user closes browser/tab

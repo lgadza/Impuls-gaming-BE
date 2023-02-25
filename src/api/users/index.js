@@ -28,12 +28,21 @@ usersRouter.post(
         });
       } else {
         const newUser = new UsersModel(req.body);
-        await sendRegistrationEmail(email, req.body);
         const { _id } = await newUser.save();
-        res.status(201).send({
-          _id,
-          message: "  We've sent a verification link on your email address",
-        });
+        const { role } = req.body;
+        if (role === "Admin") {
+          await sendRegistrationEmail(email, req.body);
+          res.status(201).send({
+            _id,
+            message:
+              "  We've sent a verification link on your email address, please verify the email",
+          });
+        } else {
+          res.status(201).send({
+            _id,
+            message: "  You're successfully registered, please login",
+          });
+        }
       }
     } catch (error) {
       console.log(error);
@@ -44,8 +53,8 @@ usersRouter.post(
 
 usersRouter.get(
   "/",
-  JWTAuthMiddleware,
-  adminOnlyMiddleware,
+  // JWTAuthMiddleware,
+  // adminOnlyMiddleware,
   async (req, res, next) => {
     try {
       const users = await UsersModel.find({});
