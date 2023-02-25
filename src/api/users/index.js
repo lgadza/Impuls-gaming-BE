@@ -217,8 +217,14 @@ usersRouter.post("/admin/login", async (req, res, next) => {
 
       const accessToken = await createAccessToken(payload);
       res.send({ accessToken });
-    }
-    if (user && user.role === "User") {
+    } else if (user && user.role && user.emailVerified === false) {
+      next(
+        createHttpError(
+          401,
+          "You're not verified yet. please contact us for me information"
+        )
+      );
+    } else if (user && user.role === "User") {
       next(createHttpError(401, "Organizers only"));
     } else {
       // 3.2 If credentials are NOT fine --> trigger a 401 error
