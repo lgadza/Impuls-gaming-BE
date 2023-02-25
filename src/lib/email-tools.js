@@ -3,7 +3,11 @@ import { response } from "express";
 
 sgMail.setApiKey(process.env.SENDGRID_KEY);
 
-export const sendRegistrationEmail = async (recipientAddress, userData) => {
+export const sendRegistrationEmail = async (
+  recipientAddress,
+  userData,
+  userId
+) => {
   const msg = {
     to: recipientAddress,
     from: process.env.SENDER_EMAIL,
@@ -15,11 +19,11 @@ export const sendRegistrationEmail = async (recipientAddress, userData) => {
 
 To complete the verification process, please click on the button below:
 
-<div><button><a href="https://impulsgaming.vercel.app/sign-in">verify email</a></button></div>
+<div><button><a href="https://impulsgaming.vercel.app/organizer/verifyEmail/${userId}">verify email</a></button></div>
 
 If you are unable to click the button, please copy and paste the link below  into your browser's address bar.
 
-<a href="https://impulsgaming.vercel.app/sign-in">verify email</a>
+<a href="https://impulsgaming.vercel.app/organizer/verifyEmail/${userId}">verify email</a>
 
 Please note that your account will remain inactive until you complete the verification process. If you have any questions or concerns, please feel free to contact us.
 

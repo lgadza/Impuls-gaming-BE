@@ -31,7 +31,7 @@ usersRouter.post(
         const { _id } = await newUser.save();
         const { role } = req.body;
         if (role === "Admin") {
-          await sendRegistrationEmail(email, req.body);
+          await sendRegistrationEmail(email, req.body, _id);
           res.status(201).send({
             _id,
             message:
@@ -99,6 +99,22 @@ usersRouter.put("/me", JWTAuthMiddleware, async (req, res, next) => {
       }
     );
     res.send(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+});
+usersRouter.put("/admin/verifyEmail/:userId", async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    const updatedUser = await UsersModel.findByIdAndUpdate(userId, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.send({
+      updatedUser,
+      message:
+        " Your email is verified, please check you inbox for more information",
+    });
   } catch (error) {
     next(error);
   }
