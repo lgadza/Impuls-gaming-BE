@@ -20,7 +20,7 @@ export const sendRegistrationEmail = async (
 To complete the verification process, please link on the button below:
 </br>
 
-<div><a href=https://impulsgaming.vercel.app/organizer/verifyEmail/${userId}"/"${userData.name}>verify email</a></div>
+<div><a href=https://impulsgaming.vercel.app/organizer/verifyEmail/${userId}/${userData.name}>verify email</a></div>
 
 
 </br>
