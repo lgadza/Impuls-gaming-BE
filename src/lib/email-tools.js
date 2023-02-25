@@ -15,7 +15,7 @@ export const sendRegistrationEmail = async (
 
     html: `<div><strong>Dear ${userData.name} ${userData.surname} </strong>
     <div>
-    <span>Thank you for signing up for our service. To ensure the security of your account and the accuracy of your information, we need to verify your email address.
+    <div>Thank you for signing up for our service. To ensure the security of your account and the accuracy of your information, we need to verify your email address.
 
 To complete the verification process, please link on the button below:
 </br>
@@ -25,23 +25,34 @@ To complete the verification process, please link on the button below:
 
 </br>
 
+<div>
 Please note that your account will remain inactive until you complete the verification process. 
 
+</div>
 </br>
+<div>
 If you have any questions or concerns, please feel free to contact us.
 
 <a href="tel:794144892">0794-144-892</a>
-</br>
 
+</div>
+</br>
+<div>
 Thank you for your cooperation.
+</div>
 </br>
-
+<div>
 Best regards,
+</div>
+</br>
+<div>
+Louis Gadza
+</div>
+
 </br>
 
-Louis Gadza</span>
-    
-   
+</div>
+</br>
     </div>
     <span>@impulsgaming</span>
     <div>`,
