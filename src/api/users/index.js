@@ -169,18 +169,8 @@ usersRouter.post("/login", async (req, res, next) => {
     // 2. Verify the credentials
     const user = await UsersModel.checkCredentials(email, password);
 
-    if (user.role === "User") {
+    if (user) {
       // 3.1 If credentials are fine --> generate an access token (JWT) and send it back as a response
-      const payload = { _id: user._id, role: user.role };
-
-      const accessToken = await createAccessToken(payload);
-      res.send({ accessToken });
-    } else {
-      // 3.2 If credentials are NOT fine --> trigger a 401 error
-      next(createHttpError(401, "Credentials are not ok!"));
-    }
-
-    if (user.role === "Admin" && user.emailVerified === true) {
       const payload = { _id: user._id, role: user.role };
 
       const accessToken = await createAccessToken(payload);
@@ -221,7 +211,7 @@ usersRouter.post("/admin/login", async (req, res, next) => {
     // 2. Verify the credentials
     const user = await UsersModel.checkCredentials(email, password);
 
-    if (user && user.role === "Admin") {
+    if (user && user.role === "Admin" && user.emailVerified === true) {
       // 3.1 If credentials are fine --> generate an access token (JWT) and send it back as a response
       const payload = { _id: user._id, role: user.role };
 
