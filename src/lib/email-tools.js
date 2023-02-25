@@ -8,6 +8,8 @@ export const sendRegistrationEmail = async (
   userData,
   userId
 ) => {
+  const params = `${userId}/${userData.name}`;
+
   const msg = {
     to: recipientAddress,
     from: process.env.SENDER_EMAIL,
@@ -20,7 +22,7 @@ export const sendRegistrationEmail = async (
 To complete the verification process, please link on the button below:
 </br>
 
-<div><a href=https://impulsgaming.vercel.app/organizer/verifyEmail/${userId}/${userData.name}>verify email</a></div>
+<div><a href=https://impulsgaming.vercel.app/organizer/verifyEmail/${params}>verify email</a></div>
 
 
 </br>
