@@ -113,7 +113,7 @@ usersRouter.put("/admin/verifyEmail/:userId", async (req, res, next) => {
     res.send({
       updatedUser,
       message:
-        " Your email is verified, please check you inbox for more information",
+        " Your email is verified, Our team is currently reviewing your request and we will get back to you within the next 24 hours with further information. We kindly ask for your patience while we work on your request. We are committed to providing you with the highest level of service and ensuring that your experience with us is a positive one.",
     });
   } catch (error) {
     next(error);
