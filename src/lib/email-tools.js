@@ -13,16 +13,14 @@ export const sendRegistrationEmail = async (
     from: process.env.SENDER_EMAIL,
     subject: ` Verify Your Email Address`,
 
-    html:
-      `<div><strong>Dear ${userData.name} ${userData.surname} </strong>
+    html: `<div><strong>Dear ${userData.name} ${userData.surname} </strong>
     <div>
     <span>Thank you for signing up for our service. To ensure the security of your account and the accuracy of your information, we need to verify your email address.
 
 To complete the verification process, please link on the button below:
 </br>
 
-<div><a href=https://impulsgaming.vercel.app/organizer/verifyEmail/${userId}` /
-      `${userData.name}">verify email</a></div>
+<div><a href=https://impulsgaming.vercel.app/organizer/verifyEmail/${userId}"/"${userData.name}">verify email</a></div>
 
 
 </br>
