@@ -175,7 +175,12 @@ usersRouter.post("/login", async (req, res, next) => {
 
       const accessToken = await createAccessToken(payload);
       res.send({ accessToken });
-    } else if (user.role === "Admin" && user.emailVerified === true) {
+    } else {
+      // 3.2 If credentials are NOT fine --> trigger a 401 error
+      next(createHttpError(401, "Credentials are not ok!"));
+    }
+
+    if (user.role === "Admin" && user.emailVerified === true) {
       const payload = { _id: user._id, role: user.role };
 
       const accessToken = await createAccessToken(payload);
