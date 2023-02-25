@@ -18,23 +18,28 @@ export const sendRegistrationEmail = async (
     <div>
     <span>Thank you for signing up for our service. To ensure the security of your account and the accuracy of your information, we need to verify your email address.
 
-To complete the verification process, please click on the button below:
-
-<div><button><a href=https://impulsgaming.vercel.app/organizer/verifyEmail/${userId}` /
-      `${userData.name}">verify email</a></button></div>
-
-If you are unable to click the button, please copy and paste the link below  into your browser's address bar.
+To complete the verification process, please link on the button below:
 </br>
-<span {"https://impulsgaming.vercel.app/organizer/verifyEmail/${userId}` /
-      `${userData.name}"}></span>
+
+<div><a href=https://impulsgaming.vercel.app/organizer/verifyEmail/${userId}` /
+      `${userData.name}">verify email</a></div>
+
+
 </br>
-Please note that your account will remain inactive until you complete the verification process. If you have any questions or concerns, please feel free to contact us.
+
+Please note that your account will remain inactive until you complete the verification process. 
+
+</br>
+If you have any questions or concerns, please feel free to contact us.
 
 <a href="tel:794144892">0794-144-892</a>
+</br>
 
 Thank you for your cooperation.
+</br>
 
 Best regards,
+</br>
 
 Louis Gadza</span>
     
