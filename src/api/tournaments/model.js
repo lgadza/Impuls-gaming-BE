@@ -7,8 +7,8 @@ import registrationModel from "./model/registrationSettings.js";
 export const tournamentsSchema = new Schema(
   {
     name: { type: String, required: true },
-    discipline_cover: { type: String },
-    discipline_name: { type: String },
+    discipline_cover: { type: String, required: true },
+    discipline_name: { type: String, required: true },
     tournamentParticipants: [participantModel],
     location: { type: String },
     startDate: { type: String },
