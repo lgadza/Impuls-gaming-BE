@@ -2,7 +2,7 @@ import express from "express";
 import { join } from "path";
 import tournamentsRouter from "./api/tournaments/index.js";
 import listEndpoints from "express-list-endpoints";
-import chatsRouter from "./api/chats/index.js";
+import chatsRouter from "./api/socket io/index.js";
 import usersRouter from "./api/users/index.js";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -13,13 +13,13 @@ import { Server } from "socket.io";
 import createHttpError from "http-errors";
 import swagger from "swagger-ui-express";
 import yaml from "yamljs";
-import { newConnectionHandler } from "./api/chats/index.js";
+import { newConnectionHandler } from "./api/socket io/index.js";
 import {
   unauthorizedHandler,
   notFoundHandler,
   badRequestHandler,
   genericErrorHandler,
-} from "./api/errorHandler.js";
+} from "./errorHandler.js";
 import filesRouter from "./api/files/index.js";
 
 const expressServer = express();

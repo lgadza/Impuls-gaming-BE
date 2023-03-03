@@ -7,6 +7,7 @@ const participantModel = new Schema({
   email: { type: String, required: true },
   nickname: { type: String, required: true },
   terms: { type: Boolean, required: true },
+  checkedIn: { type: Boolean, default: false },
 });
 
 export default participantModel;

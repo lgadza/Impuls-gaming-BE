@@ -235,7 +235,7 @@ tournamentsRouter.put(
           };
 
           await tournament.save();
-          res.send(tournament);
+          res.send(tournament.tournamentParticipants[index]);
         } else {
           next(
             createHttpError(
