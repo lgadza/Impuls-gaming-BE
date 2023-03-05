@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 import participantModel from "./model/partcipantsModel.js";
 import registrationModel from "./model/registrationSettings.js";
+import structuresModel from "./model/structuresModel.js";
 
 export const tournamentsSchema = new Schema(
   {
@@ -10,6 +11,7 @@ export const tournamentsSchema = new Schema(
     discipline_cover: { type: String, required: true },
     discipline_name: { type: String, required: true },
     tournamentParticipants: [participantModel],
+    structures: [structuresModel],
     location: { type: String },
     startDate: { type: String },
     endDate: { type: String },
@@ -26,38 +28,6 @@ export const tournamentsSchema = new Schema(
       customization: {
         validationMessage: { type: String },
         refusalMessage: { type: String },
-      },
-    },
-    structure: {
-      stage_type: { type: String },
-      general: {
-        number: { type: Number },
-        size: { type: Number },
-        divisions: { type: Number },
-        name: { type: String, default: "name" },
-      },
-      advanced: {
-        groupComp: { type: String },
-        pointsAtrribution: {
-          win: { isWin: { type: Boolean }, points: { type: Number } },
-          draw: { isDraw: { type: Boolean }, points: { type: Number } },
-          lost: { isLost: { type: Boolean }, points: { type: Number } },
-        },
-        matchForfeit: {
-          isForfeit: { type: Boolean },
-          points: { type: Number },
-        },
-      },
-      tiebreaker: {
-        option1: { type: String },
-        option2: { type: String },
-        option3: { type: String },
-      },
-      placement: {
-        isPlacement: { type: Boolean },
-      },
-      matchSettings: {
-        matchFormat: { type: String },
       },
     },
     participants: {

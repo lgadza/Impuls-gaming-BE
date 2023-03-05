@@ -284,5 +284,166 @@ tournamentsRouter.delete(
     }
   }
 );
+// ********************************** EMBEDDING STRUCTURES**************************
+tournamentsRouter.post("/:tournamentId/structures", async (req, res, next) => {
+  try {
+    const currentStructure = req.body;
+
+    if (currentStructure) {
+      const tournamentToInsert = {
+        ...req.body,
+        structureDate: new Date(),
+      };
+
+      const updatedTournament = await TournamentsModel.findByIdAndUpdate(
+        req.params.tournamentId,
+        { $push: { structures: tournamentToInsert } },
+        { new: true, runValidators: true }
+      );
+
+      if (updatedTournament) {
+        res.send(updatedTournament);
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } else {
+      next(
+        createHttpError(
+          404,
+          `Tournament with id ${req.body.tournamentId} not found!`
+        )
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+tournamentsRouter.get("/:tournamentId/structures", async (req, res, next) => {
+  try {
+    const tournament = await TournamentsModel.findById(req.params.tournamentId);
+    if (tournament) {
+      res.send(tournament.structures);
+    } else {
+      next(
+        createHttpError(
+          404,
+          `Tournament with id ${req.params.tournamentId} not found!`
+        )
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+tournamentsRouter.get(
+  "/:tournamentId/structures/:structureId",
+  async (req, res, next) => {
+    try {
+      const tournament = await TournamentsModel.findById(
+        req.params.tournamentId
+      );
+      if (tournament) {
+        const currentStructure = tournament.structures.find(
+          (tournament) => tournament._id.toString() === req.params.structureId
+        );
+        if (currentStructure) {
+          res.send(currentStructure);
+        } else {
+          next(
+            createHttpError(
+              404,
+              `Structure with id ${req.params.structureId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+tournamentsRouter.put(
+  "/:tournamentId/structures/:structureId",
+  async (req, res, next) => {
+    try {
+      const tournament = await TournamentsModel.findById(
+        req.params.tournamentId
+      );
+
+      if (tournament) {
+        const index = tournament.structures.findIndex(
+          (tournament) => tournament._id.toString() === req.params.structureId
+        );
+        if (index !== -1) {
+          tournament.structures[index] = {
+            ...tournament.structures[index].toObject(),
+            ...req.body,
+          };
+
+          await tournament.save();
+          res.send(tournament.structures[index]);
+        } else {
+          next(
+            createHttpError(
+              404,
+              `Structure with id ${req.params.structureId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+tournamentsRouter.delete(
+  "/:tournamentId/structures/:structureId",
+  async (req, res, next) => {
+    try {
+      const updatedTournament = await TournamentsModel.findByIdAndUpdate(
+        req.params.tournamentId,
+        {
+          $pull: { structures: { _id: req.params.structureId } },
+        },
+        { new: true }
+      );
+      if (updatedTournament) {
+        res.send(updatedTournament);
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default tournamentsRouter;
