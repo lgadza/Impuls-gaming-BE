@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import requestSchema from "../friendRequest/model.js";
 const { Schema, model } = mongoose;
 
 export const UsersSchema = new Schema(
@@ -20,7 +19,7 @@ export const UsersSchema = new Schema(
     area: { type: String },
     bio: { type: String },
     role: { type: String, enum: ["User", "Admin"], default: "User" },
-    connections: { pending: [requestSchema], active: [] },
+
     nickname: { type: String },
     organization: { type: String, default: "Impuls Gaming" },
     image: { type: String },

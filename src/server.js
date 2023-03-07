@@ -4,6 +4,7 @@ import tournamentsRouter from "./api/tournaments/index.js";
 import listEndpoints from "express-list-endpoints";
 import chatsRouter from "./api/socket io/index.js";
 import usersRouter from "./api/users/index.js";
+import reservationRouter from "./api/reservations/index.js";
 import cors from "cors";
 import mongoose from "mongoose";
 import googleStrategy from "./lib/auth/google.js";
@@ -60,6 +61,7 @@ expressServer.use("/tournaments", tournamentsRouter);
 expressServer.use("/users", usersRouter);
 expressServer.use("/files", filesRouter);
 expressServer.use("/messages", chatsRouter);
+expressServer.use("/reservations", reservationRouter);
 // *************************** ERROR HANDLERS **************************
 expressServer.use(badRequestHandler);
 expressServer.use(notFoundHandler);
