@@ -1,6 +1,12 @@
 import express from "express";
 import createHttpError from "http-errors";
 import ReservationsModel from "./model.js";
+import { pipeline } from "stream";
+import { createGzip } from "zlib";
+import {
+  asyncPDFGeneration,
+  getPDFReadableStream,
+} from "../../lib/pdf-tools.js";
 const reservationRouter = express.Router();
 reservationRouter.post("/", async (req, res, next) => {
   try {
@@ -21,6 +27,24 @@ reservationRouter.get("/", async (req, res, next) => {
     next(error);
   }
 });
+
+// TODO
+// reservationRouter.get(
+//   "/confirmation_pdf/:reservationId",
+//   async (req, res, next) => {
+//     try {
+//       const reservation = await ReservationsModel.findById(
+//         req.params.reservationId
+//       );
+//       await asyncPDFGeneration(reservation);
+//       res.send();
+//     } catch (error) {
+//       console.log(error);
+//       next(error);
+//     }
+//   }
+// );
+
 reservationRouter.get("/:reservationId", async (req, res, next) => {
   try {
     const reservation = await ReservationsModel.findById(

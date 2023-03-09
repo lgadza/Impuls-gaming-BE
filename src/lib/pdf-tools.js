@@ -1,8 +1,8 @@
 import PdfPrinter from "pdfmake";
 import { pipeline } from "stream";
-import { promisify } from "util"; // CORE MODULE
-
-export const getPDFReadableStream = (movie) => {
+import { promisify } from "util";
+import { getPDFWritableStream } from "./fs-tools.js";
+export const getPDFReadableStream = (confirmation) => {
   const fonts = {
     Roboto: {
       normal: "Helvetica",
@@ -12,7 +12,13 @@ export const getPDFReadableStream = (movie) => {
   const printer = new PdfPrinter(fonts);
 
   const docDefinition = {
-    content: [movie.title, movie.type],
+    content: [
+      // confirmation.station_No.toString(),
+      // confirmation.email,
+      // confirmation.number.toString(),
+      // confirmation.date,
+      confirmation.userName,
+    ],
   };
 
   const pdfReadableStream = printer.createPdfKitDocument(docDefinition);
@@ -20,9 +26,9 @@ export const getPDFReadableStream = (movie) => {
 
   return pdfReadableStream;
 };
-export const asyncPDFGeneration = async (movie) => {
-  const source = getPDFReadableStream(movie);
-
+export const asyncPDFGeneration = async (confirmation) => {
+  const source = getPDFReadableStream(confirmation);
+  const destination = getPDFWritableStream("reservation_confirmation.pdf");
   const promiseBasedPipeline = promisify(pipeline);
 
   await promiseBasedPipeline(source, destination);

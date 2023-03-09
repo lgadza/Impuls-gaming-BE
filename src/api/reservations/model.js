@@ -10,6 +10,7 @@ const reservationsSchema = new Schema(
     userName: { type: String, required: true },
     email: { type: String, required: true },
     number: { type: Number, required: true },
+    hours: { type: Number, required: true },
     comment: { type: String, required: false },
   },
   { timestamps: true }
