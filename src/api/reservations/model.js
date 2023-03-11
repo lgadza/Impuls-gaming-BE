@@ -12,6 +12,7 @@ const reservationsSchema = new Schema(
     number: { type: Number, required: true },
     hours: { type: Number, required: true },
     comment: { type: String, required: false },
+    discipline: { type: String, required: false },
     status: {
       type: String,
       enum: ["pending", "rejected", "completed"],

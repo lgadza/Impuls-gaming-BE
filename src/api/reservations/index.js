@@ -29,21 +29,21 @@ reservationRouter.get("/", async (req, res, next) => {
 });
 
 // TODO
-// reservationRouter.get(
-//   "/confirmation_pdf/:reservationId",
-//   async (req, res, next) => {
-//     try {
-//       const reservation = await ReservationsModel.findById(
-//         req.params.reservationId
-//       );
-//       await asyncPDFGeneration(reservation);
-//       res.send();
-//     } catch (error) {
-//       console.log(error);
-//       next(error);
-//     }
-//   }
-// );
+reservationRouter.get(
+  "/confirmation_pdf/:reservationId",
+  async (req, res, next) => {
+    try {
+      const reservation = await ReservationsModel.findById(
+        req.params.reservationId
+      );
+      await asyncPDFGeneration(reservation);
+      res.send();
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+);
 
 reservationRouter.get("/:reservationId", async (req, res, next) => {
   try {
