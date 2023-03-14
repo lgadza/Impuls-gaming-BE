@@ -39,7 +39,7 @@ commentsRouter.get("/", async (req, res, next) => {
   }
 });
 
-commentsRouter.get("/:commentId", async (req, res, next) => {
+commentsRouter.get("/:commentId", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const commentId = req.params.commentId;
     const comment = await CommentsModel.findById(commentId)
@@ -60,6 +60,7 @@ commentsRouter.get("/:commentId", async (req, res, next) => {
 
 commentsRouter.put(
   "/:commentId",
+  JWTAuthMiddleware,
 
   async (req, res, next) => {
     try {
@@ -84,20 +85,24 @@ commentsRouter.put(
   }
 );
 
-commentsRouter.delete("/:commentId", async (req, res, next) => {
-  try {
-    const commentId = req.params.commentId;
-    const deletedComment = await CommentsModel.findByIdAndDelete(commentId);
-    if (deletedComment) {
-      res.status(204).send();
-    } else {
-      next(createHttpError(`Comment with id ${commentId} not found`));
+commentsRouter.delete(
+  "/:commentId",
+  JWTAuthMiddleware,
+  async (req, res, next) => {
+    try {
+      const commentId = req.params.commentId;
+      const deletedComment = await CommentsModel.findByIdAndDelete(commentId);
+      if (deletedComment) {
+        res.status(204).send();
+      } else {
+        next(createHttpError(`Comment with id ${commentId} not found`));
+      }
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
-  } catch (error) {
-    console.log(error);
-    next(error);
   }
-});
+);
 
 // ***********************LIKES**********************
 commentsRouter.put("/:commentId/likes", async (req, res, next) => {
