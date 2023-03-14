@@ -22,6 +22,7 @@ import {
   genericErrorHandler,
 } from "./errorHandler.js";
 import filesRouter from "./api/files/index.js";
+import commentsRouter from "./api/reservations/comments/index.js";
 
 const expressServer = express();
 
@@ -62,6 +63,7 @@ expressServer.use("/users", usersRouter);
 expressServer.use("/files", filesRouter);
 expressServer.use("/messages", chatsRouter);
 expressServer.use("/reservations", reservationRouter);
+expressServer.use("/reservationComments", commentsRouter);
 // *************************** ERROR HANDLERS **************************
 expressServer.use(badRequestHandler);
 expressServer.use(notFoundHandler);
