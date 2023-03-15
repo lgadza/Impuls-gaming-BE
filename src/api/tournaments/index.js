@@ -3,7 +3,7 @@ import createHttpError from "http-errors";
 import TournamentsModel from "./model.js";
 import q2m from "query-to-mongo";
 import { checkTournamentSchema, triggerBadRequest } from "./validator.js";
-
+import UsersModel from "../users/model.js";
 const tournamentsRouter = express.Router();
 
 tournamentsRouter.post(
@@ -427,6 +427,339 @@ tournamentsRouter.delete(
         req.params.tournamentId,
         {
           $pull: { structures: { _id: req.params.structureId } },
+        },
+        { new: true }
+      );
+      if (updatedTournament) {
+        res.send(updatedTournament);
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+// ********************* EMBEDDING RESULTS**************************
+tournamentsRouter.post("/:tournamentId/results", async (req, res, next) => {
+  try {
+    const currentResult = req.body;
+
+    if (currentResult) {
+      const tournamentToInsert = {
+        ...req.body,
+        resultDate: new Date(),
+      };
+
+      const updatedTournament = await TournamentsModel.findByIdAndUpdate(
+        req.params.tournamentId,
+        { $push: { results: tournamentToInsert } },
+        { new: true, runValidators: true }
+      );
+
+      if (updatedTournament) {
+        res.send(updatedTournament.results);
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } else {
+      next(
+        createHttpError(
+          404,
+          `Tournament with id ${req.body.tournamentId} not found!`
+        )
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+tournamentsRouter.get("/:tournamentId/results", async (req, res, next) => {
+  try {
+    const tournament = await TournamentsModel.findById(req.params.tournamentId);
+    if (tournament) {
+      res.send(tournament.results);
+    } else {
+      next(
+        createHttpError(
+          404,
+          `Tournament with id ${req.params.tournamentId} not found!`
+        )
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+tournamentsRouter.get(
+  "/:tournamentId/results/:resultId",
+  async (req, res, next) => {
+    try {
+      const tournament = await TournamentsModel.findById(
+        req.params.tournamentId
+      );
+      if (tournament) {
+        const currentResult = tournament.results.find(
+          (tournament) => tournament._id.toString() === req.params.resultId
+        );
+        if (currentResult) {
+          res.send(currentResult);
+        } else {
+          next(
+            createHttpError(
+              404,
+              `Result with id ${req.params.resultId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+tournamentsRouter.put(
+  "/:tournamentId/results/:resultId",
+  async (req, res, next) => {
+    try {
+      const tournament = await TournamentsModel.findById(
+        req.params.tournamentId
+      );
+
+      if (tournament) {
+        const index = tournament.results.findIndex(
+          (tournament) => tournament._id.toString() === req.params.resultId
+        );
+        if (index !== -1) {
+          tournament.results[index] = {
+            ...tournament.results[index].toObject(),
+            ...req.body,
+          };
+
+          await tournament.save();
+          res.send(tournament.results[index]);
+        } else {
+          next(
+            createHttpError(
+              404,
+              `Result with id ${req.params.resultId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+tournamentsRouter.delete(
+  "/:tournamentId/results/:resultId",
+  async (req, res, next) => {
+    try {
+      const updatedTournament = await TournamentsModel.findByIdAndUpdate(
+        req.params.tournamentId,
+        {
+          $pull: { results: { _id: req.params.resultId } },
+        },
+        { new: true }
+      );
+      if (updatedTournament) {
+        res.send(updatedTournament);
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// ********************* EMBEDDING STANDING TABLE**************************
+tournamentsRouter.post(
+  "/:tournamentId/tableStandings",
+  async (req, res, next) => {
+    try {
+      const currentTableStanding = req.body;
+      console.log(currentTableStanding, "TABKE");
+      if (currentTableStanding) {
+        const tournamentToInsert = {
+          ...req.body,
+          tableStandingDate: new Date(),
+        };
+
+        const updatedTournament = await TournamentsModel.findByIdAndUpdate(
+          req.params.tournamentId,
+          { $push: { tableStanding: tournamentToInsert } },
+          { new: true, runValidators: true }
+        );
+
+        if (updatedTournament) {
+          res.send(updatedTournament.tableStanding);
+        } else {
+          next(
+            createHttpError(
+              404,
+              `Tournament with id ${req.params.tournamentId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.body.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+tournamentsRouter.get(
+  "/:tournamentId/tableStandings",
+  async (req, res, next) => {
+    try {
+      const tournament = await TournamentsModel.findById(
+        req.params.tournamentId
+      );
+      if (tournament) {
+        res.send(tournament.tableStanding);
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+tournamentsRouter.get(
+  "/:tournamentId/tableStandings/:tableStandingId",
+  async (req, res, next) => {
+    try {
+      const tournament = await TournamentsModel.findById(
+        req.params.tournamentId
+      );
+      if (tournament) {
+        const currentTableStanding = tournament.tableStanding.find(
+          (tournament) =>
+            tournament._id.toString() === req.params.tableStandingId
+        );
+        if (currentTableStanding) {
+          res.send(currentTableStanding);
+        } else {
+          next(
+            createHttpError(
+              404,
+              `TableStanding with id ${req.params.tableStandingId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+tournamentsRouter.put(
+  "/:tournamentId/tableStandings/:tableStandingId",
+  async (req, res, next) => {
+    try {
+      const tournament = await TournamentsModel.findById(
+        req.params.tournamentId
+      );
+
+      if (tournament) {
+        const index = tournament.tableStanding.findIndex(
+          (tournament) =>
+            tournament._id.toString() === req.params.tableStandingId
+        );
+        if (index !== -1) {
+          tournament.tableStanding[index] = {
+            ...tournament.tableStanding[index].toObject(),
+            ...req.body,
+          };
+
+          await tournament.save();
+          res.send(tournament.tableStanding[index]);
+        } else {
+          next(
+            createHttpError(
+              404,
+              `TableStanding with id ${req.params.tableStandingId} not found!`
+            )
+          );
+        }
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Tournament with id ${req.params.tournamentId} not found!`
+          )
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+tournamentsRouter.delete(
+  "/:tournamentId/tableStandings/:tableStandingId",
+  async (req, res, next) => {
+    try {
+      const updatedTournament = await TournamentsModel.findByIdAndUpdate(
+        req.params.tournamentId,
+        {
+          $pull: { tableStanding: { _id: req.params.tableStandingId } },
         },
         { new: true }
       );

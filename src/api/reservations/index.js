@@ -3,10 +3,7 @@ import createHttpError from "http-errors";
 import ReservationsModel from "./model.js";
 import { pipeline } from "stream";
 import { createGzip } from "zlib";
-import {
-  asyncPDFGeneration,
-  getPDFReadableStream,
-} from "../../lib/pdf-tools.js";
+import { getPDFReadableStream } from "../../lib/pdf-tools.js";
 const reservationRouter = express.Router();
 reservationRouter.post("/", async (req, res, next) => {
   try {
@@ -33,11 +30,19 @@ reservationRouter.get(
   "/confirmation_pdf/:reservationId",
   async (req, res, next) => {
     try {
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=${req.params.reservationId}.pdf`
+      );
       const reservation = await ReservationsModel.findById(
         req.params.reservationId
       );
-      await asyncPDFGeneration(reservation);
-      res.send();
+      console.log("RESEVATION", reservation);
+      if (reservation) {
+        pipeline(getPDFReadableStream(reservation), res, (error) => {
+          if (error) console.log(error);
+        });
+      }
     } catch (error) {
       console.log(error);
       next(error);

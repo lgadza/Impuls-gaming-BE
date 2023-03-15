@@ -4,7 +4,8 @@ const { Schema, model } = mongoose;
 import participantModel from "./model/partcipantsModel.js";
 import registrationModel from "./model/registrationSettings.js";
 import structuresModel from "./model/structuresModel.js";
-
+import ResultsSchema from "./model/resultsModel.js";
+import TableStandings from "./model/tableStandings.js";
 export const tournamentsSchema = new Schema(
   {
     name: { type: String, required: true },
@@ -40,6 +41,9 @@ export const tournamentsSchema = new Schema(
     price: { type: String, default: "No prizes available yet" },
     platform: { type: String, required: true },
     size: { type: Number, required: true },
+    // groups:
+    results: [ResultsSchema],
+    tableStanding: [TableStandings],
   },
 
   {
