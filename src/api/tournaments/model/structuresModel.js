@@ -34,7 +34,7 @@ const structuresModel = new Schema({
   matchSettings: {
     matchFormat: { type: String },
   },
-  brackets: [],
+  brackets: { default: [] },
 });
 
 export default structuresModel;
