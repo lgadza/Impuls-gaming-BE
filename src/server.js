@@ -10,11 +10,11 @@ import mongoose from "mongoose";
 import googleStrategy from "./lib/auth/google.js";
 import passport from "passport";
 import { createServer } from "http";
-import { Server } from "socket.io";
+// import { Server } from "socket.io";
 import createHttpError from "http-errors";
 import swagger from "swagger-ui-express";
 import yaml from "yamljs";
-import { newConnectionHandler } from "./api/socket io/index.js";
+// import { newConnectionHandler } from "./api/socket io/index.js";
 import {
   unauthorizedHandler,
   notFoundHandler,
@@ -29,8 +29,8 @@ const expressServer = express();
 const port = process.env.PORT || 3001;
 
 const httpServer = createServer(expressServer);
-export const io = new Server(httpServer);
-io.on("connection", newConnectionHandler);
+// export const io = new Server(httpServer);
+// io.on("connection", newConnectionHandler);
 passport.use("google", googleStrategy);
 const publicFolderPath = join(process.cwd(), "./public");
 
