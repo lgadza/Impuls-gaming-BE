@@ -2,7 +2,7 @@ import express from "express";
 import { join } from "path";
 import tournamentsRouter from "./api/tournaments/index.js";
 import listEndpoints from "express-list-endpoints";
-import chatsRouter from "./api/socket io/index.js";
+// import chatsRouter from "./api/socket io/index.js";
 import usersRouter from "./api/users/index.js";
 import reservationRouter from "./api/reservations/index.js";
 import cors from "cors";
@@ -61,7 +61,7 @@ expressServer.use(express.static(publicFolderPath));
 expressServer.use("/tournaments", tournamentsRouter);
 expressServer.use("/users", usersRouter);
 expressServer.use("/files", filesRouter);
-expressServer.use("/messages", chatsRouter);
+// expressServer.use("/messages", chatsRouter);
 expressServer.use("/reservations", reservationRouter);
 expressServer.use("/reservationComments", commentsRouter);
 // *************************** ERROR HANDLERS **************************
